@@ -61,11 +61,18 @@ update_db_from_otps (GSList *otps, AppData *app_data)
         otp_t *otp = g_slist_nth_data (otps, i);
         obj = build_json_obj (otp->type, otp->label, otp->issuer, otp->secret, otp->digits, otp->algo, otp->period, otp->counter);
         guint hash = json_object_get_hash (obj);
-        if (g_slist_find_custom (app_data->db_data->objects_hash, GUINT_TO_POINTER(hash), check_duplicate) == NULL) {
-            app_data->db_data->objects_hash = g_slist_append (app_data->db_data->objects_hash, g_memdup (&hash, sizeof (guint)));
-            app_data->db_data->data_to_add = g_slist_append (app_data->db_data->data_to_add, obj);
+        if (hash == 12341234) {
+            g_printerr ("===================================================================================================");
+            g_printerr ("tmp_string was NULL. Details about the data are:\n");
+            g_printerr ("type: %s\nlabel: %s\n,issuer: %s\n,digits: %d\n,algo: %s\n,period: %d\n", otp->type, otp->label, otp->issuer, otp->digits, otp->algo, otp->period);
+            g_printerr ("===================================================================================================");
         } else {
-            g_print ("[INFO] Duplicate element not added\n");
+            if (g_slist_find_custom (app_data->db_data->objects_hash, GUINT_TO_POINTER(hash), check_duplicate) == NULL) {
+                app_data->db_data->objects_hash = g_slist_append (app_data->db_data->objects_hash, g_memdup (&hash, sizeof (guint)));
+                app_data->db_data->data_to_add = g_slist_append (app_data->db_data->data_to_add, obj);
+            } else {
+                g_print ("[INFO] Duplicate element not added\n");
+            }
         }
     }
 

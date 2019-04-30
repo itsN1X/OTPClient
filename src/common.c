@@ -100,14 +100,21 @@ json_object_get_hash (json_t *obj)
     const gchar *key;
     json_t *value;
     gchar *tmp_string = gcry_calloc_secure (256, 1);
+    g_printerr ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
     json_object_foreach (obj, key, value) {
         if (g_strcmp0 (key, "period") == 0 || g_strcmp0 (key, "counter") == 0 || g_strcmp0 (key, "digits") == 0) {
             json_int_t v = json_integer_value (value);
             g_snprintf (tmp_string + strlen (tmp_string), 256, "%ld", (gint64) v);
+            g_printerr ("Adding key '%s' and value '%lld'\n", key, v);
         } else {
+            if (g_strcmp0(key, "secret") != 0) {
+                g_printerr ("Adding key '%s' and value '%s'\n", key, json_string_value(value));
+            }
+            if (tmp_string == NULL) return 12341234;
             g_strlcat (tmp_string, json_string_value (value), 256);
         }
     }
+    g_printerr ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
     guint32 hash = jenkins_one_at_a_time_hash (tmp_string, strlen (tmp_string) + 1);
 
